@@ -5,6 +5,7 @@ export default {
     background_secondary: "#FFFFFF",
     text: "#7A7A80",
     title: "#47474D",
+    heading: "#FFFFFF",
     text_detail: "#AEAEB3",
     line: "#EBEBF0",
     main: "#DC1637",

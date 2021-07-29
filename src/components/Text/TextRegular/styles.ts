@@ -1,6 +1,6 @@
 import { RFValue } from "react-native-responsive-fontsize";
 import { TextStyleProps } from "../../types/styles.types";
-import styled from "styled-components/native";
+import styled, { css } from "styled-components/native";
 
 export const Text = styled.Text<TextStyleProps>`
   font-size: ${({ size }) => size ?? RFValue(15)}px;
@@ -8,4 +8,10 @@ export const Text = styled.Text<TextStyleProps>`
   font-family: ${({ theme }) => theme.fonts.primary400};
   color: ${({ theme, color }) => color ?? theme.colors.text};
   text-transform: ${({ textTransform }) => textTransform ?? "none"};
+
+  ${({ lineHeight }) =>
+    lineHeight &&
+    css`
+      line-height: ${lineHeight}px;
+    `}
 `;

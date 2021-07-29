@@ -4,7 +4,7 @@ import { TextStyleProps } from "../../types/styles.types";
 import { Text } from "./styles";
 
 interface TextMediumSecondaryProps extends TextStyleProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 export function TextMediumSecondary({
   children,
