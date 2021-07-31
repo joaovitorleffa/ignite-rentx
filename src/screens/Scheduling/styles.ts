@@ -1,4 +1,7 @@
-import { getStatusBarHeight } from "react-native-iphone-x-helper";
+import {
+  getBottomSpace,
+  getStatusBarHeight,
+} from "react-native-iphone-x-helper";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import styled, { css } from "styled-components/native";
 
@@ -6,7 +9,10 @@ interface DateProps {
   selected?: boolean;
 }
 
-export const Container = styled.View``;
+export const Container = styled.View`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.background_secondary};
+`;
 
 export const Header = styled.View`
   padding: 25px;
@@ -57,5 +63,5 @@ export const Content = styled.ScrollView.attrs({
 })``;
 
 export const Footer = styled.View`
-  padding: 24px;
+  padding: 24px 24px ${getBottomSpace() + 24}px;
 `;

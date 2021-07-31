@@ -5,6 +5,7 @@
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "start": "react-native start",
+    "serve": "json-server ./src/services/server.json --host 192.168.0.101 --port 3333 --delay 700",
     "test": "jest"
   },
   "dependencies": {
@@ -14,6 +15,8 @@
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.5",
     "@types/react-native-calendars": "^1.1264.1",
+    "axios": "^0.21.1",
+    "date-fns": "^2.23.0",
     "expo": "~41.0.1",
     "expo-app-loading": "^1.1.2",
     "expo-font": "~9.1.0",

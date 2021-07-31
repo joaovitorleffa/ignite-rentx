@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "styled-components";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/core";
 import { RFValue } from "react-native-responsive-fontsize";
+import { useNavigation, useRoute } from "@react-navigation/core";
+
+import { CarDTO } from "../../dtos/CardDTO";
+import { formatDateToPtBR } from "../../utils/formatDate";
+import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
 
 import { Button } from "../../components/Button";
 import { Accessory } from "../../components/Accessory";
@@ -10,13 +14,6 @@ import { BackButton } from "../../components/BackButton";
 import { ImageSlider } from "../../components/ImageSlider";
 import { TextMedium } from "../../components/Text/TextMedium";
 import { TextMediumSecondary } from "../../components/Text/TextMediumSecondary";
-
-import SpeedSvg from "../../assets/speed.svg";
-import AccelerationSvg from "../../assets/acceleration.svg";
-import ForceSvg from "../../assets/force.svg";
-import GasolineSvg from "../../assets/gasoline.svg";
-import ExchangeSvg from "../../assets/exchange.svg";
-import PeopleSvg from "../../assets/people.svg";
 
 import {
   Container,
@@ -34,25 +31,107 @@ import {
   RentalQuota,
   RentalPrice,
 } from "./styles";
+import { Alert } from "react-native";
+import api from "../../services/api";
+
+interface RouteProps {
+  car: CarDTO;
+  dates: string[];
+}
+
+interface RentalPeriod {
+  start: string;
+  end: string;
+}
 
 export function SchedulingDetails() {
   const theme = useTheme();
+  const route = useRoute();
   const navigation = useNavigation();
 
-  function handleConfirmRentalBuy() {
+  const { car, dates } = route.params as RouteProps;
+
+  const rentTotal = dates.length * car.rent.price;
+
+  const [rentalPeriod, setRentalPeriod] = useState<RentalPeriod>(
+    {} as RentalPeriod
+  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  function handleGoBack() {
+    navigation.goBack();
+  }
+
+  async function handleConfirmRentalBuy() {
+    try {
+      setIsLoading(true);
+      const schedulesByCar = await fetchAllSchedulesByCar();
+
+      const unavailable_dates = {
+        ...schedulesByCar.unavailable_dates,
+        ...dates,
+      };
+
+      await createScheduleByUser();
+
+      await updateSchedulesByCar(unavailable_dates);
+    } catch (error) {
+      console.log("confirm rental buy error", error);
+      Alert.alert("Erro ao confirmar o aluguel do carro");
+      setIsLoading(false);
+    }
+
     navigation.navigate("SchedulingComplete");
   }
+
+  async function fetchAllSchedulesByCar() {
+    try {
+      const { data } = await api.get(`/schedules_bycars/${car.id}`);
+      return data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async function createScheduleByUser() {
+    try {
+      await api.post("/schedules_byuser", {
+        user_id: "1",
+        car,
+        startDate: formatDateToPtBR(dates[0]),
+        endDate: formatDateToPtBR(dates[dates.length - 1]),
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async function updateSchedulesByCar(unavailable_dates: string[]) {
+    try {
+      await api.patch(`/schedules_bycars/${car.id}`, {
+        id: car.id,
+        unavailable_dates,
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  useEffect(() => {
+    setRentalPeriod({
+      start: formatDateToPtBR(dates[0]),
+      end: formatDateToPtBR(dates[dates.length - 1]),
+    });
+  }, []);
 
   return (
     <Container>
       <Header>
-        <BackButton />
+        <BackButton onPress={handleGoBack} />
       </Header>
 
       <CardImages>
-        <ImageSlider
-          images={["https://cdn.picpng.com/audi/audi-face-28582.png"]}
-        />
+        <ImageSlider images={car.photos} />
       </CardImages>
 
       <Content>
@@ -63,14 +142,14 @@ export function SchedulingDetails() {
               textTransform="uppercase"
               color={theme.colors.text_detail}
             >
-              Lamborghini
+              {car.brand}
             </TextMediumSecondary>
             <TextMediumSecondary
               size={RFValue(25)}
               textTransform="capitalize"
               color={theme.colors.title}
             >
-              Huracan
+              {car.name}
             </TextMediumSecondary>
           </Description>
           <Rent>
@@ -79,20 +158,21 @@ export function SchedulingDetails() {
               textTransform="uppercase"
               color={theme.colors.text_detail}
             >
-              ao dia
+              {car.rent.period}
             </TextMediumSecondary>
             <TextMediumSecondary size={RFValue(25)} color={theme.colors.main}>
-              R$ 580
+              R$ {car.rent.price}
             </TextMediumSecondary>
           </Rent>
         </Details>
         <Accessories>
-          <Accessory name="380 km/h" icon={SpeedSvg} />
-          <Accessory name="3.2s" icon={AccelerationSvg} />
-          <Accessory name="800 HP" icon={ForceSvg} />
-          <Accessory name="Gasolina" icon={GasolineSvg} />
-          <Accessory name="Auto" icon={ExchangeSvg} />
-          <Accessory name="2 pessoas" icon={PeopleSvg} />
+          {car.accessories.map((row) => (
+            <Accessory
+              key={row.type}
+              name={row.name}
+              icon={getAccessoryIcon(row.type)}
+            />
+          ))}
         </Accessories>
 
         <RentalPeriod>
@@ -111,7 +191,9 @@ export function SchedulingDetails() {
             >
               De
             </TextMediumSecondary>
-            <TextMedium color={theme.colors.title}>18/06/2021</TextMedium>
+            <TextMedium color={theme.colors.title}>
+              {rentalPeriod.start}
+            </TextMedium>
           </DateInfo>
           <Feather
             color={theme.colors.heading}
@@ -126,7 +208,9 @@ export function SchedulingDetails() {
             >
               Até
             </TextMediumSecondary>
-            <TextMedium color={theme.colors.title}>18/06/2021</TextMedium>
+            <TextMedium color={theme.colors.title}>
+              {rentalPeriod.end}
+            </TextMedium>
           </DateInfo>
         </RentalPeriod>
         <RentalQuota>
@@ -139,13 +223,13 @@ export function SchedulingDetails() {
           </TextMediumSecondary>
           <RentalPrice>
             <TextMedium color={theme.colors.title}>
-              R$ 580 x3 diárias
+              {`R$ ${car.rent.price} x${dates.length} diárias`}
             </TextMedium>
             <TextMediumSecondary
               size={RFValue(24)}
               color={theme.colors.success}
             >
-              R$2.900
+              R$ {rentTotal}
             </TextMediumSecondary>
           </RentalPrice>
         </RentalQuota>
@@ -154,6 +238,8 @@ export function SchedulingDetails() {
       <Footer>
         <Button
           title="Alugar Agora"
+          enabled={!isLoading}
+          isLoading={isLoading}
           color={theme.colors.success}
           onPress={handleConfirmRentalBuy}
         />

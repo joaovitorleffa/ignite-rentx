@@ -1,19 +1,17 @@
 import React from "react";
 import { useTheme } from "styled-components";
+import { useNavigation, useRoute } from "@react-navigation/core";
 import { RFValue } from "react-native-responsive-fontsize";
 
+import { CarDTO } from "../../dtos/CardDTO";
+import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
+
+import { Button } from "../../components/Button";
 import { Accessory } from "../../components/Accessory";
 import { BackButton } from "../../components/BackButton";
 import { ImageSlider } from "../../components/ImageSlider";
 import { TextRegular } from "../../components/Text/TextRegular";
 import { TextMediumSecondary } from "../../components/Text/TextMediumSecondary";
-
-import SpeedSvg from "../../assets/speed.svg";
-import AccelerationSvg from "../../assets/acceleration.svg";
-import ForceSvg from "../../assets/force.svg";
-import GasolineSvg from "../../assets/gasoline.svg";
-import ExchangeSvg from "../../assets/exchange.svg";
-import PeopleSvg from "../../assets/people.svg";
 
 import {
   Container,
@@ -26,21 +24,34 @@ import {
   Accessories,
   Footer,
 } from "./styles";
-import { Button } from "../../components/Button";
+
+interface RouteProps {
+  car: CarDTO;
+}
 
 export function CarDetails() {
   const theme = useTheme();
+  const route = useRoute();
+  const navigation = useNavigation();
+
+  const { car } = route.params as RouteProps;
+
+  function handleNavigateToScheduling() {
+    navigation.navigate("Scheduling", { car });
+  }
+
+  function handleGoBack() {
+    navigation.goBack();
+  }
 
   return (
     <Container>
       <Header>
-        <BackButton />
+        <BackButton onPress={handleGoBack} />
       </Header>
 
       <CardImages>
-        <ImageSlider
-          images={["https://cdn.picpng.com/audi/audi-face-28582.png"]}
-        />
+        <ImageSlider images={car.photos} />
       </CardImages>
 
       <Content>
@@ -51,14 +62,14 @@ export function CarDetails() {
               textTransform="uppercase"
               color={theme.colors.text_detail}
             >
-              Lamborghini
+              {car.brand}
             </TextMediumSecondary>
             <TextMediumSecondary
               size={RFValue(25)}
               textTransform="capitalize"
               color={theme.colors.title}
             >
-              Huracan
+              {car.name}
             </TextMediumSecondary>
           </Description>
           <Rent>
@@ -67,30 +78,32 @@ export function CarDetails() {
               textTransform="uppercase"
               color={theme.colors.text_detail}
             >
-              ao dia
+              {car.rent.period}
             </TextMediumSecondary>
             <TextMediumSecondary size={RFValue(25)} color={theme.colors.main}>
-              R$ 580
+              R$ {car.rent.price}
             </TextMediumSecondary>
           </Rent>
         </Details>
         <Accessories>
-          <Accessory name="380 km/h" icon={SpeedSvg} />
-          <Accessory name="3.2s" icon={AccelerationSvg} />
-          <Accessory name="800 HP" icon={ForceSvg} />
-          <Accessory name="Gasolina" icon={GasolineSvg} />
-          <Accessory name="Auto" icon={ExchangeSvg} />
-          <Accessory name="2 pessoas" icon={PeopleSvg} />
+          {car.accessories.map((row) => (
+            <Accessory
+              key={row.type}
+              name={row.name}
+              icon={getAccessoryIcon(row.type)}
+            />
+          ))}
         </Accessories>
         <TextRegular color={theme.colors.text_detail} lineHeight={RFValue(25)}>
-          Este é automóvel desportivo. Surgiu do lendário touro de lide
-          indultado na praça Real Maestranza de Sevilla. É um belíssimo carro
-          para quem gosta de acelerar.
+          {car.about}
         </TextRegular>
       </Content>
 
       <Footer>
-        <Button title="confirmar" onPress={() => {}} />
+        <Button
+          title="Escolher período de aluguel"
+          onPress={handleNavigateToScheduling}
+        />
       </Footer>
     </Container>
   );
