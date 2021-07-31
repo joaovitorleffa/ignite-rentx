@@ -1,7 +1,8 @@
 import React from "react";
 import { useTheme } from "styled-components";
-import { RFValue } from "react-native-responsive-fontsize";
 import { Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/core";
+import { RFValue } from "react-native-responsive-fontsize";
 
 import { Button } from "../../components/Button";
 import { Accessory } from "../../components/Accessory";
@@ -36,6 +37,11 @@ import {
 
 export function SchedulingDetails() {
   const theme = useTheme();
+  const navigation = useNavigation();
+
+  function handleConfirmRentalBuy() {
+    navigation.navigate("SchedulingComplete");
+  }
 
   return (
     <Container>
@@ -149,7 +155,7 @@ export function SchedulingDetails() {
         <Button
           title="Alugar Agora"
           color={theme.colors.success}
-          onPress={() => {}}
+          onPress={handleConfirmRentalBuy}
         />
       </Footer>
     </Container>

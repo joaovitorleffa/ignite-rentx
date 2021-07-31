@@ -1,6 +1,11 @@
 import React from "react";
-import { RFValue } from "react-native-responsive-fontsize";
+import { StatusBar } from "react-native";
 import { useTheme } from "styled-components";
+import { useNavigation } from "@react-navigation/core";
+import { RFValue } from "react-native-responsive-fontsize";
+
+import { Button } from "../../components/Button";
+import { Calendar } from "../../components/Calendar";
 import { BackButton } from "../../components/BackButton";
 import { TextBold } from "../../components/Text/TextBold";
 import { TextMediumSecondary } from "../../components/Text/TextMediumSecondary";
@@ -18,12 +23,15 @@ import {
   Content,
   Footer,
 } from "./styles";
-import { StatusBar } from "react-native";
-import { Button } from "../../components/Button";
-import { Calendar } from "../../components/Calendar";
 
 export function Scheduling() {
   const theme = useTheme();
+  const navigation = useNavigation();
+
+  function handleConfirmRental() {
+    navigation.navigate("SchedulingDetails");
+  }
+
   return (
     <Container>
       <StatusBar
@@ -81,7 +89,7 @@ export function Scheduling() {
       <Content>
         <Calendar />
         <Footer>
-          <Button title="Confirmar" onPress={() => {}} />
+          <Button title="Confirmar" onPress={handleConfirmRental} />
         </Footer>
       </Content>
     </Container>

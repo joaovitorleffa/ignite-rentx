@@ -6,6 +6,7 @@ import { TextMediumSecondary } from "../Text/TextMediumSecondary";
 import GasolineSvg from "../../assets/gasoline.svg";
 
 import { Container, Details, About, Rent, ImageCar } from "./styles";
+import { RectButtonProps } from "react-native-gesture-handler";
 
 interface Car {
   brand: string;
@@ -17,14 +18,15 @@ interface Car {
   };
 }
 
-interface CarProps {
+interface CarProps extends RectButtonProps {
   data: Car;
+  onPress: () => void;
 }
 
-export function Car({ data }: CarProps) {
+export function Car({ data, onPress, ...rest }: CarProps) {
   const theme = useTheme();
   return (
-    <Container>
+    <Container onPress={onPress} {...rest}>
       <Details>
         <TextMediumSecondary
           size={RFValue(10)}

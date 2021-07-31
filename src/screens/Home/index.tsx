@@ -1,14 +1,18 @@
 import React from "react";
 import { StatusBar } from "react-native";
+import { useNavigation } from "@react-navigation/core";
 import { RFValue } from "react-native-responsive-fontsize";
 
 import LogoSvg from "../../assets/logo.svg";
+
 import { Car } from "../../components/Car";
 import { TextRegular } from "../../components/Text/TextRegular";
 
 import { Container, Header, CardList, HeaderContent, Total } from "./styles";
 
 export function Home() {
+  const navigation = useNavigation();
+
   const cars = [
     {
       thumbnail: "https://cdn.picpng.com/audi/audi-face-28582.png",
@@ -29,6 +33,11 @@ export function Home() {
       },
     },
   ];
+
+  function handlePressCardCar() {
+    navigation.navigate("Scheduling");
+  }
+
   return (
     <Container>
       <StatusBar
@@ -46,7 +55,9 @@ export function Home() {
       <CardList
         data={cars}
         keyExtractor={(item) => item.name}
-        renderItem={({ item }) => <Car data={item} />}
+        renderItem={({ item }) => (
+          <Car onPress={handlePressCardCar} data={item} />
+        )}
       />
     </Container>
   );
