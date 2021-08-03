@@ -13,6 +13,7 @@ export const Header = styled.View`
   position: absolute;
   align-items: center;
   margin-top: ${getStatusBarHeight() + 18}px;
+  margin-left: 16px;
 
   flex-direction: row;
   align-items: center;
@@ -22,14 +23,6 @@ export const Header = styled.View`
 export const CardImages = styled.View`
   margin-top: ${getStatusBarHeight() + 32}px;
 `;
-
-export const Content = styled.ScrollView.attrs({
-  showsVerticalScrollIndicator: false,
-  contentContainerStyle: {
-    padding: 24,
-    alignItems: "center",
-  },
-})``;
 
 export const Details = styled.View`
   width: 100%;

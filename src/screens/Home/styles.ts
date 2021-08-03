@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { CarDTO } from "../../dtos/CardDTO";
 
 export const Container = styled.View`
+  flex: 1;
   background-color: ${({ theme }) => theme.colors.background_primary};
 `;
 
@@ -37,22 +38,6 @@ export const CardList = styled(FlatList as new () => FlatList<CarDTO>).attrs({
   },
   showsVerticalScrollIndicator: false,
 })``;
-
-export const MyCarsButton = styled(RectButton)`
-  width: ${RFValue(60)}px;
-  height: ${RFValue(60)}px;
-  border-radius: ${RFValue(30)}px;
-
-  align-items: center;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.colors.main};
-
-  position: absolute;
-  z-index: 1000;
-  elevation: 1000;
-  bottom: ${RFPercentage(15) + RFValue(13)}px;
-  right: ${RFValue(22)}px;
-`;
 
 export const Icon = styled(Ionicons)`
   font-size: ${RFValue(24)}px;
