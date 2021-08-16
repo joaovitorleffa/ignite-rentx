@@ -81,7 +81,11 @@ export function SchedulingDetails() {
       setIsLoading(false);
     }
 
-    navigation.navigate("SchedulingComplete");
+    navigation.navigate("Confirmation", {
+      title: "Carro alugado!",
+      message: "Agora você só precisa ir\naté a concessionária da RENTX",
+      nextRoute: "Home",
+    });
   }
 
   async function fetchAllSchedulesByCar() {

@@ -1,7 +1,7 @@
 import React from "react";
 import { useTheme } from "styled-components";
 import { useWindowDimensions } from "react-native";
-import { useNavigation } from "@react-navigation/core";
+import { useNavigation, useRoute } from "@react-navigation/core";
 import { RFValue } from "react-native-responsive-fontsize";
 
 import DoneSvg from "../../assets/done.svg";
@@ -12,13 +12,22 @@ import { TextMediumSecondary } from "../../components/Text/TextMediumSecondary";
 
 import { Container, Content, Wrapper, Footer } from "./styles";
 
-export function SchedulingComplete() {
+interface Params {
+  title: string;
+  message: string;
+  nextRoute: string;
+}
+
+export function Confirmation() {
   const theme = useTheme();
+  const route = useRoute();
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
 
+  const { title, message, nextRoute } = route.params as Params;
+
   function handleNavigationToHomeScreen() {
-    navigation.navigate("Home");
+    navigation.navigate(nextRoute);
   }
 
   return (
@@ -29,15 +38,14 @@ export function SchedulingComplete() {
         <DoneSvg />
         <Wrapper>
           <TextMediumSecondary color={theme.colors.heading} size={RFValue(30)}>
-            Carro Alugado!
+            {title}
           </TextMediumSecondary>
           <TextRegular
             color={theme.colors.text_detail}
             lineHeight={RFValue(25)}
             textAlign="center"
           >
-            Agora você só precisa ir{"\n"}até a concessionária da RENTX{"\n"}
-            pegar o seu automóvel.
+            {message}
           </TextRegular>
         </Wrapper>
       </Content>

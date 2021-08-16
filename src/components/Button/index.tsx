@@ -10,6 +10,7 @@ import { Container } from "./styles";
 interface ButtonProps extends RectButtonProps {
   title: string;
   color?: string;
+  light?: boolean;
   enabled?: boolean;
   isLoading?: boolean;
   onPress: () => void;
@@ -17,6 +18,7 @@ interface ButtonProps extends RectButtonProps {
 export function Button({
   title,
   color,
+  light,
   isLoading = false,
   enabled = true,
   onPress,
@@ -34,7 +36,9 @@ export function Button({
       {isLoading ? (
         <Loading color={theme.colors.heading} />
       ) : (
-        <TextMedium color={theme.colors.shape}>{title}</TextMedium>
+        <TextMedium color={light ? theme.colors.title : theme.colors.shape}>
+          {title}
+        </TextMedium>
       )}
     </Container>
   );
